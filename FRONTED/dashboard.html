@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Personal Library Tracker</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2, #e86f95);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-header h1 {
+      font-size: 2rem;
+      margin: 0;
+      color: #ffffff;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background-color: #ffffff;
+      color: #764ba2;
+    }
+
+    .btn-primary:hover {
+      background-color: #eeeeee;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: #fff;
+      border: 1px solid #fff;
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .filter-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .books-stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      display: block;
+      margin-top: 5px;
+    }
+
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .book-card {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      color: #fff;
+    }
+
+    .empty-state {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #message {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      border-radius: 8px;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="dashboard-header">
+      <h1>📚 My Personal Library</h1>
+      <div class="header-actions">
+        <span id="userWelcome">Welcome, Arman!</span>
+        <a href="add-book.html" class="btn btn-primary">Add New Book</a>
+        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+      <div class="filter-section">
+        <div class="filter-group">
+          <label for="filterStatus">Filter by Status:</label>
+          <select id="filterStatus">
+            <option value="all">All Books</option>
+            <option value="read">Read</option>
+            <option value="unread">Unread</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="searchBooks">Search:</label>
+          <input type="text" id="searchBooks" placeholder="Search by title or author..."/>
+        </div>
+      </div>
+
+      <div class="books-stats">
+        <div class="stat-item">
+          <span class="stat-number" id="totalBooks">0</span>
+          <span class="stat-label">Total Books</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="readBooks">0</span>
+          <span class="stat-label">Books Read</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="unreadBooks">0</span>
+          <span class="stat-label">To Read</span>
+        </div>
+      </div>
+
+      <div id="booksContainer" class="books-grid">
+        <!-- Book Cards Loaded Here -->
+      </div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <h3>No books in your library yet!</h3>
+        <p>Start building your personal library by adding your first book.</p>
+        <a href="add-book.html" class="btn btn-primary">Add Your First Book</a>
+      </div>
+    </div>
+  </div>
+  <div id="message" class="message hidden"></div>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
